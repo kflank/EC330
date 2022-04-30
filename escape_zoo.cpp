@@ -4,10 +4,8 @@
 #include <deque>
 #include <string>
 
-
-
 using namespace std;
-
+/*
 bool is_edge(grid const &M, coordinate C)
 {
 
@@ -66,7 +64,7 @@ struct info
         this->H = H;
     }
 };
-/*
+
 motion_plan escape_route(grid const &M, coordinate init_coordinate, Heading init_heading)
 {
     coordinate curr = init_coordinate;
@@ -195,7 +193,7 @@ motion_plan escape_route(grid const &M, coordinate init_coordinate, Heading init
             //cout<<"size of actions before pop: "<<Actions.size()<<endl;
 
             Actions.erase(Actions.begin());
-                /*
+                
                 for (int i = 0; i < Actions.size(); i++)
                 {
                     cout << "movements after pop are: " << Actions[i].front().MP.size() << endl;
@@ -425,109 +423,186 @@ bool legal_path_to_node(coordinate current_location, info node_info)
 */
 //matrix of integers
 
-
-
 vector<vector<int>> make_matrix(grid const &M)
 {
-    std::vector<std::vector<int>> Matrix;
+    
+    vector<vector<int>> Matrix;
     int rows = M.size();
+    //cout<<"row val is "<<rows<<endl;
+    //cout<<"in make matrix"<<endl;
     int cols = M[0].size();
+    //cout<<"cols val is "<<cols<<endl;
+    //int Matrix[rows][cols];
+    //cout<<"in make matrix"<<endl;
+    
+    for (int i = 0; i < rows; i++)
+    {
+        vector<int> v1;
+        //cout<<"in make matrix"<<endl;
+        for (int j = 0; j < cols; j++)
+        {
+            if (M[i][j] == 1) //can't move there
+            {
+                v1.push_back(-2);
+                //Matrix[i][j] = -2;
+                //cout<<"does this work"<<endl;
+            }
+            else if (M[i][j] == 0)
+            {
+                v1.push_back(0);
+                //Matrix[i][j] = 0;
+            }
+        }
+        Matrix.push_back(v1);
+    }
+    /*
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
         {
-            if ( M[i][j] == 1) //can't move there 
-                Matrix[i][j] = -2;
-            else if (M[i][j] == 0)
-                Matrix[i][j] = 0;
+            cout<<"index "<<i<<" , "<<j<<" is: " <<Matrix[i][j]<<" ";
+            cout<<endl;
         }
+    }
+    */
+    return Matrix;
+}
+
+coordinate Check_cord(Heading orientation, coordinate Cord)
+{
+    coordinate C;
+    if (orientation == North)
+    {
+        C.first = Cord.first - 1;
+        C.second = Cord.second;
+        return C;
+    }
+    else if (orientation == West)
+    {
+        C.first = Cord.first;
+        C.second = Cord.second - 1;
+        return C;
+    }
+    else if (orientation == South)
+    {
+        C.first = Cord.first + 1;
+        C.second = Cord.second;
+        return C;
+    }
+    else
+    {
+        C.first = Cord.first;
+        C.second = Cord.second + 1;
+        return C;
     }
 }
 
-coordinate Check_orientation(Heading orientation, coordinate Cord)
+Heading checkOrientation(Heading orientation)
 {
-            coordinate C;
-            if (orientation == North)
-            {
-                C.first = Cord.first - 1;
-                C.second = Cord.second;
-                return C;
-            }
-            else if (orientation == West)
-            {
-                C.first = Cord.first;
-                C.second = Cord.second -1;
-                return C;
-            }
-            else if (orientation == South)
-            {
-                C.first = Cord.first +1;
-                C.second = Cord.second;
-                return C;
-            }
-            else 
-            {
-                C.first = Cord.first;
-                C.second = Cord.second + 1;
-                return C;
-            }
+    if (orientation == North)
+    {
+        return East;
+    }
+    else if (orientation == East)
+    {
+        return South;
+    }
+    else if (orientation == South)
+    {
+        return West;
+    }
+    else
+    {
+        return North;
+    }
 }
 
-motion_plan escape(vector<vector<int>> matrix, coordinate Cord ,Heading orientation,motion_plan movement)
+motion_plan escape(vector<vector<int>> matrix, coordinate Cord, Heading orientation, motion_plan movement)
 {
-
     int rows = matrix.size();
+    cout<<"rows is: "<<rows<<endl;
     int cols = matrix[0].size();
-    
+    cout<<"cols is: "<<cols<<endl;
 
-    if (matrix[Cord.first][Cord.second] == -1);
-        return movement;
+
+    if (matrix[Cord.first][Cord.second] == -1)
+        ;
+    return movement;
     if (matrix[Cord.first][Cord.second] == -2)
         return movement;
 
-    if (matrix[Cord.first][Cord.second]!= 0);
-        return movement;
-    if (matrix[Cord.first][Cord.second] ==0);
-        //check if up is going out //escape
-    if (Cord.first +1  > rows || Cord.second +1 > cols || Cord.first -1 < 0 || Cord.second - 1 < 0)
-             matrix[Cord.first][Cord.second] = 1;
-        //else:escape(matrix,up_corid,up_heading,motion_plan)
-     else 
-        {
-                //changing his code here 
-            escape(matrix, Check_orientation(orientation, Cord) , orientation, movement);
-        }
+    if (matrix[Cord.first][Cord.second] != 0)
+        ;
+    return movement;
+    if (matrix[Cord.first][Cord.second] == 0)
+        ;
+    //check if up is going out //escape
+    motion_plan MP_straight;
+    
+    if (Cord.first + 1 > rows || Cord.second + 1 > cols || Cord.first - 1 < 0 || Cord.second - 1 < 0)
+        matrix[Cord.first][Cord.second] = 1;
+    //else:escape(matrix,up_corid,up_heading,motion_plan)
+    else
+    {
+        matrix[Check_cord(orientation, Cord).first][Check_cord(orientation, Cord).second] = -1; //changing his code here
+        MP_straight = escape(matrix, Check_cord(orientation, Cord), orientation, movement);
+    }
 
-        coordinate straight = Check_orientation(orientation, Cord); // up = matrix[coordinate up]
-        matrix[up cord ] = -1
-//left
+    //coordinate straight = Check_orientation(orientation, Cord); // up = matrix[coordinate up]
+    //matrix[up cord ] = -1
+    //left
 
-        //check if left going out:;
-        if (Cord.first +1  > rows || Cord.second +1 > cols || Cord.first -1 < 0 || Cord.second - 1 < 0)
-        {
+    //check if left going out:;
+    motion_plan MP_left;
+    if (Cord.first + 1 > rows || Cord.second + 1 > cols || Cord.first - 1 < 0 || Cord.second - 1 < 0)
+    {
+        matrix[Cord.first][Cord.second] = 1;
         //matrx[coordinate] =1
+    }
+    //else escape(matrix,left_corid,left_heading,motion_plan)
+    else
+    {
+        matrix[Check_cord(orientation, Cord).first][Check_cord(orientation, Cord).second] = -1;
+        motion_plan MP_left = escape(matrix, Check_cord(orientation, Cord), checkOrientation(orientation), movement);
+    }
+    //left = matx[cordi]_-left]
 
-        }
-        else escape(matrix,left_corid,left_heading,motion_plan)
-            left = matx[cordi]_-left]
-        pick min from up and left and put it at matrix[Cord]
-        add(direction in motion plan returned by the min value escape according to which one is minimum)
-        return motion plan
+    //pick min from straight and left and put it at matrix[Cord]
+    //add(direction in motion plan returned by the min value escape according to which one is minimum) return motion plan
+    if (MP_straight.size() < MP_left.size())
+    {
+        matrix[Cord.first][Cord.second] = MP_straight.size();
+        movement.push_back(go_straight);
+    }
+    else 
+    {
+        matrix[Cord.first][Cord.second] = MP_left.size();
+        movement.push_back(go_left);
 
+    }
+    return movement;
 
-}       
+}
 motion_plan escape_route(grid const &M, coordinate init_coordinate, Heading init_heading)
 {
     vector<vector<int>> matrix = make_matrix(M);
     motion_plan init_motion_plan = {};
-    escape(matrix, init_coordinate, init_heading, init_motion_plan);
+    //cout<<"here"<<endl;
+    return escape(matrix, init_coordinate, init_heading, init_motion_plan);
 
 }
 
-
-
 int main()
 {
+
+    grid test1 = {  {1,1,1,1,},
+                    {0,0,0,0,},
+                    {1,0,0,1,},
+                    {1,1,0,1,},
+                   
+                    };
+    
+    /*
     grid zoo = {
         {1, 1, 1, 1},
         {0, 0, 0, 0},
@@ -537,9 +612,10 @@ int main()
         {1, 0, 0, 1}
 
     };
+    */
     //cout<<zoo[2][3]<<endl;
     coordinate C;
-    C.first = 4;
+    C.first = 2;
     C.second = 2;
 
     Heading N = North;
@@ -548,8 +624,8 @@ int main()
     //cout<<zoo[1].size()<<endl;
     //cout<<zoo[6][100]<<endl;
     //is_edge(zoo,C);
-    motion_plan path;
-    path = escape_route(zoo, C, North);
+    //motion_plan path;
+    escape_route(test1, C, North);
     //cout<<"size is: "<<path.size()<<endl;
     //path[0];
     //BFS(zoo, C, N);
