@@ -86,6 +86,7 @@ void Graph::printAllPaths(int s, int d)
 // visited[] keeps track of vertices in current path.
 // path[] stores actual vertices and path_index is current
 // index in path[]
+vector<int> Nodes;
 void Graph::printAllPathsUtil(int u, int d, bool visited[],
 							  int path[], int &path_index)
 {
@@ -99,7 +100,11 @@ void Graph::printAllPathsUtil(int u, int d, bool visited[],
 	if (u == d)
 	{
 		for (int i = 0; i < path_index; i++)
+		{
 			cout << path[i] << " ";
+			if (i == 0)
+				Nodes.push_back(path[0]);
+		}
 		cout << endl;
 	}
 	else // If current vertex is not destination
@@ -110,6 +115,7 @@ void Graph::printAllPathsUtil(int u, int d, bool visited[],
 			if (!visited[*i])
 				printAllPathsUtil(*i, d, visited, path, path_index);
 	}
+
 
 	// Remove current vertex from path[] and mark it as unvisited
 	path_index--;
@@ -175,20 +181,12 @@ int main()
 
 
 vector<vector<int>> Mat = make_matrix(r1);
- int rows = Mat.size();
+int rows = Mat.size();
 int cols = Mat[0].size();
 
 
 Graph g(rows);
 	
-	/*
-	g.addEdge(0, 1);
-	g.addEdge(0, 2);
-	g.addEdge(0, 3);
-	g.addEdge(2, 0);
-	g.addEdge(2, 1);
-	g.addEdge(1, 3);
-	*/
 for (int i = 0; i < rows; i++)
 {
 	for (int j = 0; j < cols; j++)
@@ -219,15 +217,10 @@ for (int i = 0; i < rows; i++)
 		}
 	}
 	sort(InDeg.begin(), InDeg.end());
-	
-	
-		//cout<<"in Deg size is: "<<InDeg.size()<<endl;
-	
-
-
+		
 
 	int s;
-	int d = 8;
+	int d = 1;
 
 	for (int i = 0; i < InDeg.size(); i++)
 	{
@@ -235,6 +228,17 @@ for (int i = 0; i < rows; i++)
 		cout << "Following are all different paths from " << s << " to " << d << endl;
 		g.printAllPaths(s, d);
 	}
+
+	cout<<"Nodes of 0 is: "<<Nodes[0]<<endl;
+	cout<<"Nodes of 1 is: "<<Nodes[1]<<endl;
+	cout<<"Nodes of 2 is: "<<Nodes[2]<<endl;
+	
+	
+	
+	//cout<<"Nodes of 3 is: "<<Nodes[3]<<endl;
+
+
+
 
 	return 0;
 }
