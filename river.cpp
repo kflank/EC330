@@ -10,35 +10,9 @@
 
 using namespace std;
 
-// part (a)
+vector<vector<int>> make_matrix(river M);
+vector<int> Nodes; //global vector
 
-std::vector<int> start(river const &r, int t)
-{
-	//t is the starting node
-	//river is a vector of bool vectors
-	//retrun a vector of ints with the nodes in sorted order
-
-		
-
-	return {}; // don't forget to change this
-}
-
-// part (b)
-std::vector<int> meet(river const &r, int ryan, int mira)
-{
-
-	// your implementation here
-
-	return {}; // don't forget to change this
-}
-
-
-
-// C++ program to print all paths
-// from a source to destination.
-
-// A directed graph using
-// adjacency list representation
 class Graph
 {
 	int V;			// No. of vertices in graph
@@ -82,11 +56,6 @@ void Graph::printAllPaths(int s, int d)
 	printAllPathsUtil(s, d, visited, path, path_index);
 }
 
-// A recursive function to print all paths from 'u' to 'd'.
-// visited[] keeps track of vertices in current path.
-// path[] stores actual vertices and path_index is current
-// index in path[]
-vector<int> Nodes;
 void Graph::printAllPathsUtil(int u, int d, bool visited[],
 							  int path[], int &path_index)
 {
@@ -101,11 +70,11 @@ void Graph::printAllPathsUtil(int u, int d, bool visited[],
 	{
 		for (int i = 0; i < path_index; i++)
 		{
-			cout << path[i] << " ";
+			//cout << path[i] << " ";
 			if (i == 0)
 				Nodes.push_back(path[0]);
 		}
-		cout << endl;
+		//cout << endl;
 	}
 	else // If current vertex is not destination
 	{
@@ -116,52 +85,104 @@ void Graph::printAllPathsUtil(int u, int d, bool visited[],
 				printAllPathsUtil(*i, d, visited, path, path_index);
 	}
 
-
 	// Remove current vertex from path[] and mark it as unvisited
 	path_index--;
 	visited[u] = false;
 }
 
+// part (a)
 
+std::vector<int> start(river const &r, int t)
+{
 
+	vector<vector<int>> Mat = make_matrix(r);
+	int rows = Mat.size();
+	int cols = Mat[0].size();
+
+	Graph g(rows);
+
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < cols; j++)
+		{
+			if (Mat[i][j] == 1)
+			{
+				g.addEdge(i, j);
+			}
+		}
+	}
+
+	//create a vector of all indegree = 0 noded
+	vector<int> InDeg;
+	for (int i = 0; i < cols; i++)
+	{
+		int count = 0;
+		for (int j = 0; j < rows; j++)
+		{
+			if (Mat[j][i] == 1)
+			{
+				count++;
+			}
+		}
+		if (!count)
+		{
+			InDeg.push_back(i);
+		}
+	}
+	sort(InDeg.begin(), InDeg.end());
+
+	int s;
+	int d = t;
+
+	for (int i = 0; i < InDeg.size(); i++)
+	{
+		s = InDeg[i];
+		g.printAllPaths(s, d);
+	}
+	for (int i = 0; i < Nodes.size(); i++)
+	{
+		//cout<<"Nodes of "<<i<<" is: "<<Nodes[i]<<endl;
+	}
+	return Nodes; // don't forget to change this
+}
+
+// part (b)
+std::vector<int> meet(river const &r, int ryan, int mira)
+{
+
+	// your implementation here
+
+	return {}; // don't forget to change this
+}
 
 vector<vector<int>> make_matrix(river M)
 {
-    
-    vector<vector<int>> Matrix;
-    int rows = M.size();
-    int cols = M[0].size();
 
-    
-    for (int i = 0; i < rows; i++)
-    {
-        vector<int> v1;
-        for (int j = 0; j < cols; j++)
-        {
-            if (M[i][j] == 1) 
-            {
-                v1.push_back(1);
-            }
-            else if (M[i][j] == 0)
-            {
-                v1.push_back(0);
-            }
-        }
-        Matrix.push_back(v1);
-    }
-    
-    return Matrix;
+	vector<vector<int>> Matrix;
+	int rows = M.size();
+	int cols = M[0].size();
+
+	for (int i = 0; i < rows; i++)
+	{
+		vector<int> v1;
+		for (int j = 0; j < cols; j++)
+		{
+			if (M[i][j] == 1)
+			{
+				v1.push_back(1);
+			}
+			else if (M[i][j] == 0)
+			{
+				v1.push_back(0);
+			}
+		}
+		Matrix.push_back(v1);
+	}
+
+	return Matrix;
 }
 
-
-
-
-
-
-
-
-
-
+/*
 // Driver program
 int main()
 {
@@ -178,6 +199,15 @@ int main()
 				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+
+
+
+
+
+start(r1, 8);
+
+
+
 
 
 vector<vector<int>> Mat = make_matrix(r1);
@@ -229,14 +259,7 @@ for (int i = 0; i < rows; i++)
 		g.printAllPaths(s, d);
 	}
 
-	cout<<"Nodes of 0 is: "<<Nodes[0]<<endl;
-	cout<<"Nodes of 1 is: "<<Nodes[1]<<endl;
-	cout<<"Nodes of 2 is: "<<Nodes[2]<<endl;
 	
-	
-	
-	//cout<<"Nodes of 3 is: "<<Nodes[3]<<endl;
-
 
 
 
@@ -244,27 +267,4 @@ for (int i = 0; i < rows; i++)
 }
 
 
-
-
-
-
-
-
-/*
-int main()
-{
-
-	river r1 = {// river network in part (a)
-				{0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
-				{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-				{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-				{0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
-				{0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
-				{0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
-				{0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-				{0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0},
-				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-
-				*/
+*/
