@@ -230,6 +230,21 @@ bool Is_Intersect(river const &r, int node)
 	return false;
 }
 
+int Compare(vector<int> R_vec, vector<int> M_vec)
+{
+	for (int i = 0; i < R_vec.size(); i++)
+	{
+		for (int j = 0; j < M_vec.size(); j++)
+		{
+			if (R_vec[i] == M_vec[j])
+				return R_vec[i];
+		}
+	}
+
+
+}
+
+
 
 
 // Driver program
@@ -264,7 +279,7 @@ int main()
 
 	//start(r1, 8);
 
-	vector<vector<int>> Mat = make_matrix(r1);
+	vector<vector<int>> Mat = make_matrix(r2);
 	int rows = Mat.size();
 	int cols = Mat[0].size();
 
@@ -328,7 +343,7 @@ int main()
 
 	for (int i = 0; i < OutDeg.size(); i++)
 	{
-		int s = 2;	   //Mira starting point is 2
+		int s = 1;	   //Mira starting point is 2
 		d = OutDeg[i]; //if you are able to make it to the same node then you should be able to make it to the same Node out
 		cout << "Following are all different paths from " << s << " to " << d << " for Mira" << endl;
 		g.printAllPaths(s, d);
@@ -348,7 +363,7 @@ int main()
 
 	
 
-
+/*
 	vector<int> vecEPM;
 	for (int i = Ryan_size - 1; i >= 0; i--)
 	{
@@ -374,13 +389,31 @@ int main()
 			}
 		}
 	}
+*/
+vector<int> intersections;
+for (int i = 0; i < Ryan.size(); i++)
+{
+	for (int j = 0; j < Mira.size(); j++)
+	{		
+		 int comparison = Compare( Ryan[i], Mira[j] );
+		 if (find(intersections.begin(), intersections.end(), comparison) == intersections.end() )
+		 {
+		 	intersections.push_back(comparison);
+		 }
+	}
+}
 
+for (int i = 0; i < intersections.size(); i++)
+{
+	cout<<"intersections: "<<intersections[i]<<endl;
+}
 
+/*
 for (int i = 0; i < vecEPM.size(); i++)
 {
 	cout<<" vecEPM is: "<<vecEPM[i]<<endl;
 }
-
+*/
 
 
 	return 0;
