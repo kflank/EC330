@@ -11,7 +11,11 @@
 using namespace std;
 
 vector<vector<int>> make_matrix(river M);
-vector<int> Nodes; //global vector
+
+vector<int> Nodes; //global vector for part a
+vector<vector<int>> All_path;
+vector<vector<int>> Ryan;
+vector<vector<int>> Mira;
 
 class Graph
 {
@@ -66,15 +70,19 @@ void Graph::printAllPathsUtil(int u, int d, bool visited[],
 
 	// If current vertex is same as destination, then print
 	// current path[]
+	vector<int> temp;
 	if (u == d)
 	{
 		for (int i = 0; i < path_index; i++)
 		{
-			//cout << path[i] << " ";
+			temp.push_back(path[i]);
+			cout << path[i] << " ";
+
 			if (i == 0)
 				Nodes.push_back(path[0]);
 		}
-		//cout << endl;
+		All_path.push_back(temp);
+		cout << endl;
 	}
 	else // If current vertex is not destination
 	{
@@ -182,10 +190,52 @@ vector<vector<int>> make_matrix(river M)
 	return Matrix;
 }
 
-/*
+bool Is_Intersect(river const &r, int node)
+{
+	vector<int> intersect;
+	vector<vector<int>> Mat = make_matrix(r);
+	int rows = Mat.size();
+	int cols = Mat[0].size();
+
+	for (int i = 0; i < cols; i++)
+	{
+		int counter = 0;
+		for (int j = 0; j < rows; j++)
+		{
+			if (Mat[j][i] == 1)
+			{
+				//cout<<"counter at "<<i<<" "<<j<<endl;
+				counter++;
+			}
+		}
+		if (counter >= 2)
+		{
+			//cout<<"push back "<<i<<endl;
+			intersect.push_back(i);
+		}
+	}
+	//cout<<"node is "<<node<<endl;
+	//cout<<"intersect size is "<<intersect.size()<<endl;
+	for (int i = 0; i < intersect.size(); i++)
+	{
+		if (intersect[i] == node)
+		{
+			//cout << "i is: " << i << endl;
+			//cout << "intersect of " << i << " is: " << intersect[i] << endl;
+			//cout<<"node "<<intersect[i]<<" is an intersect node"<<endl;
+			return true;
+		}
+	}
+	//cout<<"node "<<node<<" is not an intersect node"<<endl;
+	return false;
+}
+
+
+
 // Driver program
 int main()
 {
+	
 	// Create a graph given in the above diagram
 	river r1 = {// river network in part (a)
 				{0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
@@ -200,66 +250,136 @@ int main()
 				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
+	river r2 = {// river network in part (b)
+				{0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+				{0, 0, 0, 1, 1, 0, 0, 0, 0, 0},
+				{0, 0, 0, 0, 1, 0, 0, 1, 0, 0},
+				{0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+				{0, 0, 0, 0, 0, 1, 0, 1, 0, 0},
+				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+				{0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
+				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+				{0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
+	//start(r1, 8);
 
+	vector<vector<int>> Mat = make_matrix(r1);
+	int rows = Mat.size();
+	int cols = Mat[0].size();
 
+	Graph g(rows);
 
-start(r1, 8);
-
-
-
-
-
-vector<vector<int>> Mat = make_matrix(r1);
-int rows = Mat.size();
-int cols = Mat[0].size();
-
-
-Graph g(rows);
-	
-for (int i = 0; i < rows; i++)
-{
-	for (int j = 0; j < cols; j++)
+	for (int i = 0; i < rows; i++)
 	{
-		if (Mat[i][j] == 1)
+		for (int j = 0; j < cols; j++)
 		{
-			g.addEdge(i,j);
-		}
-	}
-}
-
-//create a vector of all indegree = 0 noded
-	vector<int> InDeg;
-	for (int i = 0; i < cols; i++)
-	{
-		int count = 0;
-		for (int j = 0; j < rows; j++)
-		{
-			//count = 0;
-			if (Mat[j][i] == 1)
+			if (Mat[i][j] == 1)
 			{
-				count++;
+				g.addEdge(i, j);
 			}
 		}
-		if(!count){
+	}
+
+	//create a vector of all indegree = 0 noded
+	vector<int> InDeg;
+	vector<int> OutDeg;
+	for (int i = 0; i < cols; i++)
+	{
+		int countOut = 0;
+		int countIn = 0;
+		for (int j = 0; j < rows; j++)
+		{
+			if (Mat[i][j] == 1)
+			{
+				countOut++;
+			}
+
+			if (Mat[j][i] == 1)
+			{
+				countIn++;
+			}
+		}
+		if (!countIn)
+		{
 			InDeg.push_back(i);
+		}
+		if (!countOut)
+		{
+			OutDeg.push_back(i);
 			//cout << "row " << i << " has in degree of zero." << endl;
 		}
 	}
 	sort(InDeg.begin(), InDeg.end());
-		
+	sort(OutDeg.begin(), OutDeg.end());
 
-	int s;
-	int d = 1;
+	int s;	   //starting point
+	int d = 7; //end point
 
-	for (int i = 0; i < InDeg.size(); i++)
+	for (int i = 0; i < OutDeg.size(); i++)
 	{
-		s = InDeg[i];
-		cout << "Following are all different paths from " << s << " to " << d << endl;
+		int s = 0;	   //ryans starting point is 0
+		d = OutDeg[i]; //if you are able to make it to the same node then you should be able to make it to the same Node out
+		cout << "Following are all different paths from " << s << " to " << d << " for ryan" << endl;
+		g.printAllPaths(s, d);
+		//cout<<"Ryan vector: "<<All_path[0][0]<<","<<All_path[0][1]<<","<<All_path[0][2]<<endl;
+	}
+	int Ryan_size = All_path.size();
+
+	for (int i = 0; i < OutDeg.size(); i++)
+	{
+		int s = 2;	   //Mira starting point is 2
+		d = OutDeg[i]; //if you are able to make it to the same node then you should be able to make it to the same Node out
+		cout << "Following are all different paths from " << s << " to " << d << " for Mira" << endl;
 		g.printAllPaths(s, d);
 	}
 
+	int Mira_size = All_path.size() - Ryan_size;
+
+	for (int i = 0; i < Ryan_size; i++)
+	{
+		Ryan.push_back(All_path[i]); //all the path Ryan traverses through
+	}
+
+	for (int i = Ryan_size; i < All_path.size(); i++)
+	{
+		Mira.push_back(All_path[i]); //all the paths Mira traverses through
+	}
+
 	
+
+
+	vector<int> vecEPM;
+	for (int i = Ryan_size - 1; i >= 0; i--)
+	{
+		int tempEPM;
+		int counter = 1;
+		for (int j = Mira_size - 1; j >= 0; j--)
+		{
+			for (int k = Ryan[i].size() - 1; k >= 0; k--)
+			{
+				for (int l = Mira[j].size() - 1; l >= 0; l--)
+				{
+					if (Ryan[i][k] == Mira[j][l])
+					{
+						tempEPM = Ryan[i][k];
+					}
+				}
+				if (tempEPM && Is_Intersect(r1, tempEPM)) //the column temp has more than 2)
+				{
+					cout<<"push back at i: "<<i<<" j: "<<j<<" k: "<<k<<endl;
+					cout<<"temp is: "<<tempEPM<<endl;
+					vecEPM.push_back(tempEPM);
+				}
+			}
+		}
+	}
+
+
+for (int i = 0; i < vecEPM.size(); i++)
+{
+	cout<<" vecEPM is: "<<vecEPM[i]<<endl;
+}
 
 
 
@@ -267,4 +387,3 @@ for (int i = 0; i < rows; i++)
 }
 
 
-*/
