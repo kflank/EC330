@@ -1,5 +1,5 @@
 # EC330
-Algorithms 
+Algorithms and data structures
 
 
 
